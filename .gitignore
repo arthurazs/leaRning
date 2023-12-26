@@ -1,0 +1,10 @@
+# built plots
+03-plots
+
+# built README
+*.html
+
+# RStudio
+.RData
+.Rhistory
+.Rproj.user
