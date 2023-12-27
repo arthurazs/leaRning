@@ -16,4 +16,4 @@ read.csv("01-data/palmerpenguins.csv") |>
     y = "Bill depth (mm)",
   )
 
-ggsave("03-plots/bill_lengh_by_bill_depth.pdf", width = 10, height = 5, units = "in")
+ggsave("03-plots/01-bill_lengh_by_bill_depth.pdf", width = 10, height = 5, units = "in")
