@@ -4,21 +4,21 @@ library(ggplot2)
 
 # 3.5.2 Groups summarise ====
 
-flights |> 
-  filter(!is.na(dep_delay)) |> 
-  group_by(month) |> 
+flights |>
+  filter(!is.na(dep_delay)) |>
+  group_by(month) |>
   summarise(avg_dep_delay = mean(dep_delay))
 
-flights |> 
-  group_by(month) |> 
+flights |>
+  group_by(month) |>
   summarise(
     avg_dep_delay = mean(dep_delay, na.rm = TRUE),
     entries = n(),
   )
 
-flights |> 
-  filter(dep_delay > 0) |> 
-  group_by(month) |> 
+flights |>
+  filter(dep_delay > 0) |>
+  group_by(month) |>
   summarise(
     avg_dep_delay = mean(dep_delay, na.rm = TRUE),
     entries = n(),
@@ -26,53 +26,53 @@ flights |>
 
 # 3.5.3 Groups slice ====
 
-flights |> 
-  relocate(dest, arr_delay) |> 
-  group_by(dest) |> 
+flights |>
+  relocate(dest, arr_delay) |>
+  group_by(dest) |>
   slice_max(arr_delay, n = 1, with_ties = FALSE)
 
-flights |> 
-  relocate(dest, arr_delay) |> 
-  group_by(dest) |> 
+flights |>
+  relocate(dest, arr_delay) |>
+  group_by(dest) |>
   slice_max(arr_delay, n = 2)
 
 # 3.5.4 Groups multiple variables ====
 
-flights |>  
+flights |>
   group_by(year, month, day) |>
   summarise(entries = n(), .groups = "drop_last")  # summarise defaults to drop_last
 
-flights |>  
+flights |>
   group_by(year, month, day) |>
   slice_min(dep_time, n = 1, with_ties = FALSE)  # does not drop
 
 # 3.5.5 Groups ungroup ====
 
-flights |>  
+flights |>
   group_by(year, month, day) |>
-  ungroup() |> 
+  ungroup() |>
   summarise(avg_dep_delay = mean(dep_delay, na.rm = TRUE), entries = n())
 
 # 3.5.6 Groups .by ====
 
-flights |> 
-  group_by(month) |> 
+flights |>
+  group_by(month) |>
   summarize(
-    avg_dep_delay = mean(dep_delay, na.rm = TRUE), 
+    avg_dep_delay = mean(dep_delay, na.rm = TRUE),
     entries = n(),
   )
 
-flights |> 
+flights |>
   summarize(
-    avg_dep_delay = mean(dep_delay, na.rm = TRUE), 
+    avg_dep_delay = mean(dep_delay, na.rm = TRUE),
     entries = n(),
     .by = month
-  ) |> 
+  ) |>
   arrange(month)
 
-flights |> 
+flights |>
   summarize(
-    delay = mean(dep_delay, na.rm = TRUE), 
+    delay = mean(dep_delay, na.rm = TRUE),
     n = n(),
     .by = c(origin, dest)
   )
@@ -82,15 +82,15 @@ flights |>
 # Which carrier has the worst average delays?
 
 flights |>
-  filter(dep_delay > 0) |> 
-  group_by(carrier) |> 
-  summarise(avg_dep_delay = mean(dep_delay)) |> 
+  filter(dep_delay > 0) |>
+  group_by(carrier) |>
+  summarise(avg_dep_delay = mean(dep_delay)) |>
   arrange(desc(avg_dep_delay))
 
 flights |>
-  filter(!is.na(dep_delay)) |> 
-  group_by(carrier) |> 
-  summarise(avg_dep_delay = mean(dep_delay)) |> 
+  filter(!is.na(dep_delay)) |>
+  group_by(carrier) |>
+  summarise(avg_dep_delay = mean(dep_delay)) |>
   arrange(desc(avg_dep_delay))
 
 # 3.5.7 Groups Exercise 2 ====
@@ -98,8 +98,8 @@ flights |>
 # Find the flights that are most delayed upon departure from each destination.
 
 flights |>
-  select(dest, dep_delay, flight) |> 
-  group_by(dest) |> 
+  select(dest, dep_delay, flight) |>
+  group_by(dest) |>
   slice_max(dep_delay, n = 1)
 
 # 3.5.7 Groups Exercise 3 ====
@@ -113,7 +113,7 @@ if (!dir.exists("03-plots")) {
 
 flights |>
   group_by(hour) |>
-  summarise(avg_delay = mean(dep_delay, na.rm = TRUE)) |> 
+  summarise(avg_delay = mean(dep_delay, na.rm = TRUE)) |>
   ggplot(aes(hour, avg_delay)) +
   geom_smooth() +
   labs(
@@ -132,9 +132,9 @@ ggsave("03-plots/02-avg_delay_over_day.pdf", width = 10, height = 5, units = "in
 # slice_min(n = 3) -> 3 lowest
 # slice_min(n = -3) -> all, but the 3 last, lowest
 
-flights |> 
-  relocate(dest, dep_delay) |> 
-  group_by(dest) |> 
+flights |>
+  relocate(dest, dep_delay) |>
+  group_by(dest) |>
   slice_min(dep_delay, n = -3, with_ties = FALSE)
 
 # 3.5.7 Groups Exercise 5 ====
@@ -205,11 +205,11 @@ df |>
 # 3.6 Groups Case Study aggregates and sample size ====
 
 # Whenever you do any aggregation, it’s always a good idea to include a count (n()).
-# That way, you can ensure that you’re not drawing conclusions based on very small amounts of data. 
+# That way, you can ensure that you’re not drawing conclusions based on very small amounts of data.
 
 flights |>
-  filter(dep_delay > 0) |> 
-  group_by(carrier) |> 
-  summarise(avg_delay = mean(dep_delay), entries = n()) |> 
-  # filter(entries > 9000) |> 
+  filter(dep_delay > 0) |>
+  group_by(carrier) |>
+  summarise(avg_delay = mean(dep_delay), entries = n()) |>
+  # filter(entries > 9000) |>
   arrange(desc(avg_delay))

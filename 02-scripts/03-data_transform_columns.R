@@ -4,35 +4,35 @@ library(ggplot2)
 
 # 3.4 Columns Study ====
 
-flights |> 
+flights |>
   mutate(
     delay_gain = dep_delay - arr_delay,
     speed_mph = distance / air_time * 60,
     .keep = "used"
   )
 
-flights |> 
+flights |>
   select(where(is.character))
 
-flights |> 
+flights |>
   select(year:day)
 
-flights |> 
+flights |>
   select(!year:day)
 
 flights |>
   select(day, Hour = hour, Minute = minute, time_hour)
 
-flights |> 
+flights |>
   relocate(year:dep_time, .after = time_hour)
 
-flights |> 
+flights |>
   relocate(starts_with("arr"), .before = dep_time)
 
-flights |> 
-  filter(dest == "IAH") |> 
-  mutate(speed = distance / air_time * 60) |> 
-  select(year:day, dep_time, carrier, flight, speed) |> 
+flights |>
+  filter(dest == "IAH") |>
+  mutate(speed = distance / air_time * 60) |>
+  select(year:day, dep_time, carrier, flight, speed) |>
   arrange(desc(speed))
 
 # 3.3.5 Columns Exercise 1 ====

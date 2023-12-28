@@ -4,28 +4,28 @@ library(ggplot2)
 
 # 3.2.5 Rows Exercise 1 ====
 
-THIRTY_MINUTES <- 30
-ONE_HOUR <- THIRTY_MINUTES * 2
-TWO_HOURS <- 2 * ONE_HOUR
-HOUSTON <- c("IAH", "HOU")
-SUMMER <- c(7, 8, 9)
+thirty_minutes <- 30
+one_hour <- thirty_minutes * 2
+two_hours <- 2 * one_hour
+houston <- c("IAH", "HOU")
+summer <- c(7, 8, 9)
 
 flights |>
   filter(
-    arr_delay >= TWO_HOURS,
-    dest %in% HOUSTON,
+    arr_delay >= two_hours,
+    dest %in% houston,
     carrier %in% c("UA", "AA", "DL"),
-    month %in% SUMMER,
+    month %in% summer,
   )
 
 flights |>
   filter(
-    arr_delay > TWO_HOURS,
+    arr_delay > two_hours,
     dep_delay <= 0,
   )
 
 flights |>
-  filter(dep_delay >= ONE_HOUR, air_time > THIRTY_MINUTES)
+  filter(dep_delay >= one_hour, air_time > thirty_minutes)
 
 # 3.2.5 Rows Exercise 2 ====
 
