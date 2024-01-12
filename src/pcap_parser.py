@@ -1,36 +1,25 @@
 from scapy.all import PcapReader
 from pathlib import Path
+from pysv.sv import unpack_sv
+from statistics import mean
 
 path = Path("01-data") / "sv.pcap"
 
 with PcapReader(str(path)) as pcap:
+    baseline = None
+    previous = 0
+    deltas = []
     for packet in pcap:
         if packet.type != 0x88BA:  # SV
             continue
-        header = packet.raw_packet_cache
-        payload = bytes(packet.payload)
+        
+        if baseline is None:
+            baseline = packet.time
+        
+        timestamp = packet.time - baseline
+        sv = unpack_sv(bytes(packet))
+        # print(timestamp - previous, timestamp, sv)
+        deltas.append(timestamp - previous)
+        previous = timestamp
+    print(min(deltas) * 1e6, mean(deltas) * 1e6, max(deltas) * 1e6)
 
-        break
-        print(packet.direction, '\n---')
-        print(packet.display, '\n---')
-        print(packet.dissect, '\n---')
-        print(packet.do_dissect, '\n---')
-        print(packet.do_dissect_payload, '\n---')
-        print(packet.dst, '\n---')
-        print(packet.fields, '\n---')
-        print(packet.fields_desc, '\n---')
-        print(packet.fieldtype, '\n---')
-        print(packet.firstlayer, '\n---')
-        print(packet.fragment, '\n---')
-        print(packet.lastlayer, '\n---')
-        print(packet.layers, '\n---')
-        print(packet.name, '\n---')
-        print(packet.original, '\n---')
-        print(packet.parent, '\n---')
-        print(packet.sprintf, '\n---')
-        print(packet.src, '\n---')
-        print(packet.summary, '\n---')
-        print(packet.time, '\n---')
-        print(packet.type, '\n---')
-        print(packet.wirelen, '\n---')
-        break
