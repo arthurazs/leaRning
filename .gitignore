@@ -8,3 +8,12 @@
 .RData
 .Rhistory
 .Rproj.user
+
+# Python
+*.egg-info
+
+# Python venv
+.venv
+
+# PyCharm
+.idea
