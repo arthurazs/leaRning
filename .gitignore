@@ -11,6 +11,7 @@
 
 # Python
 *.egg-info
+build
 
 # Python venv
 .venv
