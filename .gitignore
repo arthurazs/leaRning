@@ -1,5 +1,6 @@
 # built plots
 03-plots
+*.csv
 
 # built README
 *.html
