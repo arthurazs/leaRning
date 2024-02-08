@@ -1,5 +1,5 @@
 # built plots
-03-plots
+*.pdf
 *.csv
 
 # built README
