@@ -38,8 +38,8 @@ for file in (
     analog_channel_names = mala_channels if file.name == "mala" else ied_channels
 
     with (csv_path / file.name).with_suffix(".csv").open("w") as csv:
-        csv.write("T (us), IAW, IBW, ICW, VAY, VBY, VCY\n")
+        csv.write("T (ms), IAW, IBW, ICW, VAY, VBY, VCY\n")
 
-        logger.info("Saving to csv...\n")
+        logger.info("Saving to csv [%d Hz]...\n", cfg.frequency)
         for timestamp, ia, ib, ic, va, vb, vc in dat.get_analogs(analog_channel_names):
             csv.write(f"{timestamp}, {ia}, {ib}, {ic}, {va}, {vb}, {vc}\n")
