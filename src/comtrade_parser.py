@@ -12,20 +12,34 @@ logging.basicConfig(
 logger = logging.getLogger("pcap_parser")
 
 base = Path("01-data") / "atpiec"
+
 mala_base = base / "mala"
-mala = mala_base / "mala"
 sgc_base = base / "sgc"
+
+mala = mala_base / "mala"
 sgc_pub = sgc_base / "pub"
 sgc_sub = sgc_base / "sub"
 
-# mala
-cfg = Configuration.load(mala.with_suffix(".CFG"))
-dat = Data.load(mala.with_suffix(".DAT"), cfg)
+csv_path = base / "csv"
+csv_path.mkdir(parents=True, exist_ok=True)
 
-for name, channel in cfg.analogs.items():
-    logger.info("%s: %s [%s]", name, channel.unit, channel._phase)
+mala_channels = ("I_2_1_0", "I_2_2_0", "I_2_3_0", "V_2_1_0", "V_2_2_0", "V_2_3_0")
+ied_channels = ("IAW", "IBW", "ICW", "VAY", "VBY", "VCY")
 
-# logger.info(cfg.analogs)
-# logger.info(cfg.analogs_order)
-# for analog in dat.get_analogs(("IAW", "IBW", "ICW", "VAY", "VBY", "VCY")):
-#     logger.info(analog)
+for file in (
+    mala,
+    sgc_pub,
+    sgc_sub,
+):
+    logger.info("Reading %s COMTRADE", file.name)
+    cfg = Configuration.load(file.with_suffix(".CFG"))
+    dat = Data.load(file.with_suffix(".DAT"), cfg)
+
+    analog_channel_names = mala_channels if file.name == "mala" else ied_channels
+
+    with (csv_path / file.name).with_suffix(".csv").open("w") as csv:
+        csv.write("T (us), IAW, IBW, ICW, VAY, VBY, VCY\n")
+
+        logger.info("Saving to csv...\n")
+        for timestamp, ia, ib, ic, va, vb, vc in dat.get_analogs(analog_channel_names):
+            csv.write(f"{timestamp}, {ia}, {ib}, {ic}, {va}, {vb}, {vc}\n")
