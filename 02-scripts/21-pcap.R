@@ -13,15 +13,13 @@ if (!dir.exists(output_path)) {
   dir.create(output_path)
 }
 
-for (name in list("pub", "sub", "mala")) {
-  # name <- "pub"   # 50 Hz, Primary in A kV, current 1 | 1, voltage 1 | 1
-  # name <- "sub"   # 50 Hz, Primary in A kV, current 1 | 1, voltage 1 | 1
-  # name <- "mala"  # 60 Hz, Secondary in A V, current 3000 | 5, voltage 517883 | 115
-  range_start_ms <- 0
+# name <- "pub"
+for (name in list("pub", "mala")) {4588.165
+  if (name == "pub") { range_start_ms <- 4109.968} else { range_start_ms <- 1414.793 }
   range_val_ms <- 20
-  title <- sprintf("%s COMTRADE", name)
-  input_file <- sprintf("%s/%s_comtrade.csv", input_path, name)
-  output_file <- sprintf("%s/20-%s_comtrade.pdf", output_path, name)
+  title <- sprintf("%s PCAP", name)
+  input_file <- sprintf("%s/%s_pcap.csv", input_path, name)
+  output_file <- sprintf("%s/21-%s_pcap.pdf", output_path, name)
   
   atpiec <- read.csv(input_file) |>
     rename(time_us = T..us.) |>
