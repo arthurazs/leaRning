@@ -15,73 +15,60 @@ logger = logging.getLogger("pcap_parser")
 
 
 def main() -> None:
-    base = Path("01-data") / "atpiec"
+    base = Path("01-data") / "atpiec" / "pcap"
+    file = base / "svMeuFullLoad"
 
-    mala_base = base / "mala"
-    sgc_base = base / "sgc"
+    pcap_file = file.with_suffix(".pcapng")
+    if not pcap_file.is_file():
+        pcap_file = file.with_suffix(".pcap")
+    csv_file = (base / file.name).with_suffix(".csv")
+    logger.info("Reading %s pcap...", file.name)
+    with PcapReader(str(pcap_file)) as pcap, csv_file.open("w", encoding="utf8") as csv:
+        baseline = None
+        previous = 0
+        deltas = []
 
-    mala = mala_base / "mala"
-    sgc_pub = sgc_base / "pub"
+        csv.write("T (us), IAW, IBW, ICW, VAY, VBY, VCY\n")
+        logger.info("Parsing frames...")
+        for packet in pcap:
+            if packet.type == 0x8100:  # VLAN
+                eth_type = packet.payload.type
+                packet.payload = packet.payload.payload
+                packet.type = eth_type
 
-    csv_path = base / "csv"
-    csv_path.mkdir(parents=True, exist_ok=True)
+            if packet.type != 0x88BA:  # SV
+                continue
 
-    for file in (
-        mala,
-        sgc_pub,
-        # sgc_sub,  # there no sub pcap
-    ):
-        pcap_file = file.with_suffix(".pcapng")
-        if not pcap_file.is_file():
-            pcap_file = file.with_suffix(".pcap")
-        csv_file = (csv_path / (file.name + "_pcap")).with_suffix(".csv")
-        logger.info("Reading %s pcap...", file.name)
-        with PcapReader(str(pcap_file)) as pcap, csv_file.open("w", encoding="utf8") as csv:
-            baseline = None
-            previous = 0
-            deltas = []
+            packet_time = packet.time * dec.Decimal(1e6)
 
-            csv.write("T (us), IAW, IBW, ICW, VAY, VBY, VCY\n")
-            logger.info("Parsing frames...")
-            for packet in pcap:
-                if packet.type == 0x8100:  # VLAN
-                    eth_type = packet.payload.type
-                    packet.payload = packet.payload.payload
-                    packet.type = eth_type
+            if baseline is None:
+                baseline = packet_time
 
-                if packet.type != 0x88BA:  # SV
-                    continue
+            timestamp = packet_time - baseline
+            sv = unpack_sv(bytes(packet))
 
-                packet_time = packet.time * dec.Decimal(1e6)
+            # razao LE  # TODO @arthurazs: implementar direto no pysv
+            ia = sv.i_a / 1_000
+            ib = sv.i_b / 1_000
+            ic = sv.i_c / 1_000
+            va = sv.v_a / 100
+            vb = sv.v_b / 100
+            vc = sv.v_c / 100
 
-                if baseline is None:
-                    baseline = packet_time
+            # passando valores do primario para secundario
+            ia /= 1 if file.name == "pub" else 3000/5
+            ib /= 1 if file.name == "pub" else 3000/5
+            ic /= 1 if file.name == "pub" else 3000/5
+            va /= 1 if file.name == "pub" else 517883/115
+            vb /= 1 if file.name == "pub" else 517883/115
+            vc /= 1 if file.name == "pub" else 517883/115
 
-                timestamp = packet_time - baseline
-                sv = unpack_sv(bytes(packet))
+            csv.write(f"{timestamp}, {ia}, {ib}, {ic}, {va}, {vb}, {vc}\n")
 
-                # razao LE  # TODO @arthurazs: implementar direto no pysv
-                ia = sv.i_a / 1_000
-                ib = sv.i_b / 1_000
-                ic = sv.i_c / 1_000
-                va = sv.v_a / 100
-                vb = sv.v_b / 100
-                vc = sv.v_c / 100
-
-                # passando valores do primario para secundario
-                ia /= 1 if file.name == "pub" else 3000/5
-                ib /= 1 if file.name == "pub" else 3000/5
-                ic /= 1 if file.name == "pub" else 3000/5
-                va /= 1 if file.name == "pub" else 517883/115
-                vb /= 1 if file.name == "pub" else 517883/115
-                vc /= 1 if file.name == "pub" else 517883/115
-
-                csv.write(f"{timestamp}, {ia}, {ib}, {ic}, {va}, {vb}, {vc}\n")
-
-                deltas.append(timestamp - previous)
-                previous = timestamp
-            logger.info("Calculating min/mean/max (us)...")
-            logger.info("%.3f/%.3f/%.3f\n", min(deltas), mean(deltas), max(deltas))
+            deltas.append(timestamp - previous)
+            previous = timestamp
+        logger.info("Calculating min/mean/max (us)...")
+        logger.info("%.3f/%.3f/%.3f\n", min(deltas), mean(deltas), max(deltas))
 
 
 if __name__ == "__main__":
