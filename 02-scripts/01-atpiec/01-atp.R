@@ -37,6 +37,9 @@ melted <- atp |>
     values_to = "measurement",
   )
 
+melted <- melted |>
+  mutate(measurement = if_else(type == "I", measurement / 1000, measurement / 100))
+
 melted |>
   filter(time_ms < range_start_ms + range_val_ms, time_ms >= range_start_ms) |>
   ggplot(aes(time_ms, measurement, color = phase)) +

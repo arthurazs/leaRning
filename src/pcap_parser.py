@@ -1,10 +1,10 @@
 import decimal as dec
 import logging
-
-from scapy.all import PcapReader
 from pathlib import Path
-from pysv.sv import unpack_sv
 from statistics import mean
+
+from pysv.sv import unpack_sv
+from scapy.all import PcapReader
 
 logging.basicConfig(
     format="[%(levelname)7s] %(asctime)s | "
@@ -56,12 +56,14 @@ def main() -> None:
             vc = sv.v_c / 100
 
             # passando valores do primario para secundario
-            ia /= 1 if file.name == "pub" else 3000/5
-            ib /= 1 if file.name == "pub" else 3000/5
-            ic /= 1 if file.name == "pub" else 3000/5
-            va /= 1 if file.name == "pub" else 517883/115
-            vb /= 1 if file.name == "pub" else 517883/115
-            vc /= 1 if file.name == "pub" else 517883/115
+            output_in_secondary = False
+            if output_in_secondary:
+                ia /= 300
+                ib /= 300
+                ic /= 300
+                va /= 4347.8
+                vb /= 4347.8
+                vc /= 4347.8
 
             csv.write(f"{timestamp}, {ia}, {ib}, {ic}, {va}, {vb}, {vc}\n")
 

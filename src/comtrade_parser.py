@@ -29,6 +29,7 @@ def assert_current(unit: str) -> None:
         msg = "Expected A unit"
         raise ValueError(msg)
 
+
 def main() -> None:
     base = Path("01-data") / "atpiec" / "comtrade"
     file = base / "HR_10022"
