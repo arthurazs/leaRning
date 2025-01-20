@@ -2,7 +2,7 @@ library(ggplot2)
 library(tidyr)
 library(dplyr)
 
-plot_type <- "atp"
+plot_type <- "pcap"
 
 input_path <- sprintf("01-data/atpiec/%s", plot_type)
 output_path <- "03-plots/atpiec"
@@ -17,11 +17,12 @@ if (!dir.exists(output_path)) {
 
 names <- c("2024-05-07exp1", "2024-05-07exp2")
 for (name in names) {
-  range_start_ms <- 700
+  # TODO sync atp/pcap with comtrade
+  range_start_ms <- 690
   range_val_ms <- 300
   title <- sprintf("[%s] %s", plot_type, name)
   input_file <- sprintf("%s/%s.csv", input_path, name)
-  output_file <- sprintf("%s/01-%s_%s.pdf", output_path, plot_type, name)
+  output_file <- sprintf("%s/02-%s_%s.pdf", output_path, plot_type, name)
 
   atp <- read.csv(input_file) |>
     rename(time_us = T..us.) |>
@@ -39,7 +40,7 @@ for (name in names) {
     )
 
   melted <- melted |>
-    mutate(measurement = if_else(type == "I", measurement / 1000, measurement / 100000))
+    mutate(measurement = if_else(type == "I", measurement, measurement / 1000))
 
   melted |>
     filter(time_ms < range_start_ms + range_val_ms, time_ms >= range_start_ms) |>
