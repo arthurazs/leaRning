@@ -9,6 +9,7 @@ dependencies = [
   "scapy==2.5.0",
   "pysv @ git+https://github.com/arthurazs/pysv.git",
   "pytrade @ git+https://github.com/arthurazs/pytrade.git",
+  "ATPIEC @ git+https://github.com/paulopinheirouff/ATPIEC.git"
 ]
 
 [project.optional-dependencies]
