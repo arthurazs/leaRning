@@ -17,8 +17,8 @@ if (!dir.exists(output_path)) {
 
 names <- c("2024-05-07exp1", "2024-05-07exp2")
 for (name in names) {
-  range_start_ms <- 700
-  range_val_ms <- 300
+  # range_start_ms <- 718
+  # range_val_ms <- 250
   title <- sprintf("[%s] %s", plot_type, name)
   input_file <- sprintf("%s/%s.csv", input_path, name)
   output_file <- sprintf("%s/01-%s_%s.pdf", output_path, plot_type, name)
@@ -42,8 +42,11 @@ for (name in names) {
     mutate(measurement = if_else(type == "I", measurement / 1000, measurement / 100000))
 
   melted |>
-    filter(time_ms < range_start_ms + range_val_ms, time_ms >= range_start_ms) |>
+    # filter(time_ms < range_start_ms + range_val_ms, time_ms >= range_start_ms) |>
     ggplot(aes(time_ms, measurement, color = phase)) +
+    coord_cartesian(xlim = c(718, 968)) +
+    # scale_x_continuous(breaks = c(718, 768, 800, 818, 868, 918, 968)) +
+    scale_x_continuous(breaks = c(750, 800, 850, 900, 950)) +
     geom_line() +
     # geom_point() +
     facet_wrap(
