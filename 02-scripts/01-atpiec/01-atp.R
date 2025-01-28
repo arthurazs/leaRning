@@ -17,8 +17,6 @@ if (!dir.exists(output_path)) {
 
 names <- c("2024-05-07exp1", "2024-05-07exp2")
 for (name in names) {
-  # range_start_ms <- 718
-  # range_val_ms <- 250
   title <- sprintf("[%s] %s", plot_type, name)
   input_file <- sprintf("%s/%s.csv", input_path, name)
   output_file <- sprintf("%s/01-%s_%s.pdf", output_path, plot_type, name)
@@ -63,6 +61,10 @@ for (name in names) {
     ) +
     ylab(NULL) +
     theme(
+      text = element_text(size = 20),
+      plot.title = element_text(size = 15),
+      axis.title = element_text(size = 15),
+      legend.title = element_text(size = 15),
       strip.background = element_blank(),
       strip.placement = "outside",
     )
