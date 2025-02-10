@@ -52,7 +52,7 @@ for (name in names) {
     ggplot(aes(time_ms, measurement, color = phase)) +
     coord_cartesian(xlim = lims) +
     scale_x_continuous(breaks = breaks) +
-    geom_line() +
+    geom_line(linewidth = 1) +
     # geom_point() +
     facet_wrap(
       ~type,
@@ -67,6 +67,7 @@ for (name in names) {
       color = "Phase",
     ) +
     ylab(NULL) +
+    theme_minimal() +
     theme(
       text = element_text(size = 20),
       plot.title = element_text(size = 15),

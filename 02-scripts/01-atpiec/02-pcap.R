@@ -45,7 +45,7 @@ for (name in names) {
     coord_cartesian(xlim = c(718, 968)) +
     # scale_x_continuous(breaks = c(718, 768, 800, 818, 868, 918, 968)) +
     scale_x_continuous(breaks = c(750, 800, 850, 900, 950)) +
-    geom_line() +
+    geom_line(linewidth = 1) +
     # geom_point() +
     facet_wrap(
       ~type,
@@ -60,6 +60,7 @@ for (name in names) {
       color = "Phase",
     ) +
     ylab(NULL) +
+    theme_minimal() +
     theme(
       text = element_text(size = 20),
       plot.title = element_text(size = 15),
